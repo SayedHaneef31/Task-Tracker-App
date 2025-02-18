@@ -30,3 +30,14 @@ function App() {
 }
 
 export default App;
+
+
+
+// import React from "react";
+
+// function App() {
+//   console.log("🚀 App.tsx is rendering!");
+//   return <h1>Hello World! React is Working! 🎉</h1>;
+// }
+
+// export default App;

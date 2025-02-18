@@ -38,6 +38,7 @@ const TaskListScreen: React.FC = () => {
       >
         Create New Task List
       </Button>
+      console.log("Task Lists:", state.taskLists);             //Added this line to check the log
       {state.taskLists.map((list) => {
         return (
           <Card
