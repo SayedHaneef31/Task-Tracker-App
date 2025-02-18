@@ -1,6 +1,7 @@
 package com.firstApp.Task.Tracker.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -117,6 +118,7 @@ public class TaskList {
     @Column(name="description")
     private String description;
 
+    @JsonManagedReference  // ✅ Prevent infinite recursion
     @OneToMany(mappedBy = "taskList", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Task> tasks;
 

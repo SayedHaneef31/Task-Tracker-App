@@ -1,6 +1,7 @@
 package com.firstApp.Task.Tracker.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,6 +45,7 @@ public class Task {
     @Column(name = "priority",nullable = false)
     private TaskPriority priority;
 
+    @JsonBackReference  // ✅ Prevent infinite recursion
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_list_id", nullable = false)
     private TaskList taskList;

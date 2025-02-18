@@ -5,6 +5,7 @@ import com.firstApp.Task.Tracker.Repositories.TaskListRepo;
 import com.firstApp.Task.Tracker.Service.TaskListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -51,6 +52,7 @@ public class TaskListServiceImpl implements TaskListService {
 
     }
 
+    @Transactional
     @Override
     public Optional<TaskList> getTaskListById(UUID id) {
         return taskListRepo.findById(id);

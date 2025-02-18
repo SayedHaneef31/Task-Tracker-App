@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -18,15 +19,20 @@ public class TaskController {
     @Autowired
     private TaskService taskService;
 
-//    @GetMapping
-//    public List<Task> listTaskList(@PathVariable("id") UUID id)
-//    {
-//        return taskService.listTask(id);
-//    }
+    @GetMapping
+    public List<Task> listTasksFromTaskList(@PathVariable("id") UUID id)
+    {
+//        System.out.println("Fetching tasks for TaskList ID: " + id);
+//        Optional<Task> tasks =
+        //System.out.println("Tasks fetched: " + tasks.size());
+        return taskService.getTasksByTaskListId(id);
+    }
 
-//    @PostMapping
-//    public Task createTaskFromID(@PathVariable UUID id,@RequestBody Task task)
-//    {
-//       return taskService.createTaskByID(id,task);
-//    }
+
+
+    @PostMapping
+    public Task createTaskFromID(@PathVariable UUID id,@RequestBody Task task)
+    {
+       return taskService.createTaskByID(id,task);
+    }
 }
