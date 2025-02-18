@@ -28,11 +28,29 @@ public class TaskController {
         return taskService.getTasksByTaskListId(id);
     }
 
-
+    @GetMapping("/{taskId}")
+    public Optional<Task> getTask(@PathVariable UUID id,@PathVariable UUID taskId)
+    {
+        return taskService.getTask(id,taskId);
+    }
 
     @PostMapping
     public Task createTaskFromID(@PathVariable UUID id,@RequestBody Task task)
     {
        return taskService.createTaskByID(id,task);
+    }
+
+
+    @PutMapping("/{taskId}")
+    public Task updateTaskFromId(@PathVariable UUID id,@PathVariable UUID taskId,@RequestBody Task task)
+    {
+        return taskService.updateTask(id,taskId,task);
+    }
+
+    @DeleteMapping("/{taskId}")
+    public void deleteTaskFromId(@PathVariable UUID id, @PathVariable UUID taskId)
+    {
+        taskService.deleteTaskByID(id,taskId);
+
     }
 }

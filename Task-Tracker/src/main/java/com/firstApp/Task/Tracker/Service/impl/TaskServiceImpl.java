@@ -80,4 +80,34 @@ public class TaskServiceImpl implements TaskService {
 
 
     }
+
+    @Override
+    public Optional<Task> getTask(UUID TaskListID, UUID TaskID) {
+       return taskRepo.findByTaskListIdAndId(TaskListID,TaskID);
+    }
+
+    @Transactional
+    @Override
+    public Task updateTask(UUID TasKListID, UUID TaskID, Task task) {
+
+        //Create the object of current task and retrive it by id
+        Task current=taskRepo.getById(TaskID);
+        current.setTitle(task.getTitle());
+        current.setDescription(task.getDescription());
+        current.setDueDate(task.getDueDate());
+        current.setPriority(task.getPriority());
+
+        return taskRepo.save(current);
+
+    }
+
+    @Transactional
+    @Override
+    public void deleteTaskByID(UUID TasKListID, UUID TaskID) {
+        if (!taskListRepo.existsById(TaskID))                //Checking if taskList is present or not...If not throw the erroe
+        {
+            throw new IllegalArgumentException("TaskList with ID " + TaskID + " not found");
+        }
+        taskRepo.deleteByTaskListIdAndId(TasKListID,TaskID);
+    }
 }

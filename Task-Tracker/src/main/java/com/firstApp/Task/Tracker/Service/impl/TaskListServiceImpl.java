@@ -59,6 +59,7 @@ public class TaskListServiceImpl implements TaskListService {
 
     }
 
+    @Transactional
     @Override
     public void deleteTaskListById(UUID id) {
         if (!taskListRepo.existsById(id))                //Checking if taskList is present or not...If not throw the erroe
@@ -69,6 +70,7 @@ public class TaskListServiceImpl implements TaskListService {
         //return;
     }
 
+    @Transactional      //Adviced to be put where at top of any service calls which make multiple calls to a repository
     @Override
     public TaskList updateTaskListByID(UUID id,TaskList taskList) {
 
