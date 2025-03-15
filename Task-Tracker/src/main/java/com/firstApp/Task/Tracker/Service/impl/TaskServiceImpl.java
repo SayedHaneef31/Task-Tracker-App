@@ -7,6 +7,7 @@ import com.firstApp.Task.Tracker.Entity.TaskStatus;
 import com.firstApp.Task.Tracker.Repositories.TaskListRepo;
 import com.firstApp.Task.Tracker.Repositories.TaskRepo;
 import com.firstApp.Task.Tracker.Service.TaskService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +39,14 @@ public class TaskServiceImpl implements TaskService {
 //        return tasks;
     }
 
+    @Override
+    public Optional<Task> getTaskById(UUID id) {
+        return taskRepo.findById(id);
+    }
+
     @Transactional
     @Override
-    public Task createTaskByID(UUID id, Task task) {
+    public Task createTaskByID(UUID taskListId, Task task) {
         if(null!=task.getId()) throw new IllegalArgumentException("Task already has an id");
 
         if(null== task.getTitle() || task.getTitle().isBlank()) throw new IllegalArgumentException("Task should always have an title");
@@ -52,7 +58,7 @@ public class TaskServiceImpl implements TaskService {
 
         TaskStatus taskStatus= TaskStatus.OPEN;    // Since abhi abhi task create hua hai therefore wo open hi hoga
 
-        TaskList taskList= taskListRepo.findById(id)
+        TaskList taskList= taskListRepo.findById(taskListId)
                 .orElseThrow(()-> new IllegalArgumentException("Invalid task list id provided"));
 
         LocalDateTime now= LocalDateTime.now();
@@ -82,32 +88,33 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Optional<Task> getTask(UUID TaskListID, UUID TaskID) {
-       return taskRepo.findByTaskListIdAndId(TaskListID,TaskID);
-    }
-
     @Transactional
-    @Override
-    public Task updateTask(UUID TasKListID, UUID TaskID, Task task) {
+    public Task updateTask(UUID taskId, UUID taskListId,Task updatedTask) {
+        // Find the existing task
+        Task existingTask = taskRepo.findById(taskId)
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + taskId));
 
-        //Create the object of current task and retrive it by id
-        Task current=taskRepo.getById(TaskID);
-        current.setTitle(task.getTitle());
-        current.setDescription(task.getDescription());
-        current.setDueDate(task.getDueDate());
-        current.setPriority(task.getPriority());
-
-        return taskRepo.save(current);
-
-    }
-
-    @Transactional
-    @Override
-    public void deleteTaskByID(UUID TasKListID, UUID TaskID) {
-        if (!taskListRepo.existsById(TaskID))                //Checking if taskList is present or not...If not throw the erroe
-        {
-            throw new IllegalArgumentException("TaskList with ID " + TaskID + " not found");
+        System.out.println("Existing task ID: " + existingTask.getId());
+        System.out.println("Updated task ID: " + updatedTask.getId());
+        // Check if the task belongs to the given taskListId
+        if (!existingTask.getTaskList().getId().equals(taskListId)) {
+            throw new IllegalArgumentException("Task does not belong to the provided TaskList");
         }
-        taskRepo.deleteByTaskListIdAndId(TasKListID,TaskID);
+
+        // Update only the fields that are allowed
+        existingTask.setTitle(updatedTask.getTitle());
+        existingTask.setDescription(updatedTask.getDescription());
+        existingTask.setDueDate(updatedTask.getDueDate());
+        existingTask.setStatus(updatedTask.getStatus());
+        existingTask.setPriority(updatedTask.getPriority());
+        existingTask.setUpdated(LocalDateTime.now()); // Update timestamp
+
+        // Save and return the updated task
+        return taskRepo.save(existingTask);
+    }
+
+    @Override
+    public void deleteTaskById(UUID taskId) {
+        taskRepo.deleteById(taskId);
     }
 }

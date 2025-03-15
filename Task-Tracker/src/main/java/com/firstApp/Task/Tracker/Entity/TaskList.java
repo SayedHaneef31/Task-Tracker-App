@@ -1,6 +1,7 @@
 package com.firstApp.Task.Tracker.Entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,30 +32,6 @@ public class TaskList {
         this.updated = updated;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TaskList taskList = (TaskList) o;
-        return Objects.equals(id, taskList.id) && Objects.equals(title, taskList.title) && Objects.equals(description, taskList.description) && Objects.equals(tasks, taskList.tasks) && Objects.equals(created, taskList.created) && Objects.equals(updated, taskList.updated);
-    }
-
-    @Override
-    public String toString() {
-        return "TaskList{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", tasks=" + tasks +
-                ", created=" + created +
-                ", updated=" + updated +
-                '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description, tasks, created, updated);
-    }
 
     public void setId(UUID id) {
         this.id = id;
@@ -118,7 +95,7 @@ public class TaskList {
     @Column(name="description")
     private String description;
 
-    @JsonManagedReference  // ✅ Prevent infinite recursion
+    @JsonIgnore  // ✅ Prevent infinite recursion
     @OneToMany(mappedBy = "taskList", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
     private List<Task> tasks;
 

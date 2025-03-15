@@ -2,6 +2,7 @@ package com.firstApp.Task.Tracker.Entity;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,7 +46,7 @@ public class Task {
     @Column(name = "priority",nullable = false)
     private TaskPriority priority;
 
-    @JsonBackReference  // ✅ Prevent infinite recursion
+    @JsonIgnore  // ✅ Prevent infinite recursion
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_list_id", nullable = false)
     private TaskList taskList;
@@ -65,20 +66,7 @@ public class Task {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", dueDate=" + dueDate +
-                ", status=" + status +
-                ", priority=" + priority +
-                ", taskList=" + taskList +
-                ", updated=" + updated +
-                ", created=" + created +
-                '}';
-    }
+
 
     public Task() {
     }
@@ -151,16 +139,5 @@ public class Task {
         this.created = created;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description) && Objects.equals(dueDate, task.dueDate) && status == task.status && priority == task.priority && Objects.equals(taskList, task.taskList) && Objects.equals(updated, task.updated) && Objects.equals(created, task.created);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description, dueDate, status, priority, taskList, updated, created);
-    }
 }

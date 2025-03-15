@@ -92,30 +92,31 @@ const CreateUpdateTaskScreen: React.FC = () => {
       }
     }
   }, [listId, taskId, state.tasks]);
-
   const createUpdateTask = async () => {
     try {
       if (!listId) return;
-
+  
+      console.log("isUpdate:", isUpdate, "taskId:", taskId);
+  
+      const taskData = {
+        id: taskId ?? undefined, // Ensure `id` is only included for update
+        title,
+        description,
+        dueDate,
+        priority,
+        status,
+      };
+  
+      console.log("Sending data to API:", taskData);
+  
       if (isUpdate && taskId) {
-        await api.updateTask(listId, taskId, {
-          id: taskId,
-          title,
-          description,
-          dueDate,
-          priority,
-          status,
-        });
+        console.log("Updating task...");
+        await api.updateTask(listId, taskId, taskData);
       } else {
-        await api.createTask(listId, {
-          title,
-          description,
-          dueDate,
-          priority,
-          status: undefined,
-        });
+        console.log("Creating new task...");
+        await api.createTask(listId, taskData);
       }
-
+  
       navigate(`/task-lists/${listId}`);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -125,6 +126,40 @@ const CreateUpdateTaskScreen: React.FC = () => {
       }
     }
   };
+  
+
+  // const createUpdateTask = async () => {
+  //   try {
+  //     if (!listId) return;
+
+  //     if (isUpdate && taskId) {
+  //       await api.updateTask(listId, taskId, {
+  //         id: taskId,
+  //         title,
+  //         description,
+  //         dueDate,
+  //         priority,
+  //         status,
+  //       });
+  //     } else {
+  //       await api.createTask(listId, {
+  //         title,
+  //         description,
+  //         dueDate,
+  //         priority,
+  //         status: undefined,
+  //       });
+  //     }
+
+  //     navigate(`/task-lists/${listId}`);
+  //   } catch (err) {
+  //     if (axios.isAxiosError(err)) {
+  //       setError(err.response?.data?.message || err.message);
+  //     } else {
+  //       setError("An unknown error occurred");
+  //     }
+  //   }
+  // };
 
   const handleDateChange = (date: Date | null) => {
     setDueDate(date || undefined);

@@ -122,9 +122,9 @@ const TaskListScreen: React.FC = () => {
           )}
         </TableCell>
         <TableCell className="px-4 py-2">
-          <Button variant="ghost" aria-label={`Edit task "${task.title}"`} onClick={() => navigate(`/task-lists/${listId}/edit-task/${task.id}`)}>
+          {/* <Button variant="ghost" aria-label={`Edit task "${task.title}"`} onClick={() => navigate(`/task-lists/${listId}/edit-task/${task.id}`)}>
             <Edit className="h-4 w-4" />
-          </Button>
+          </Button> */}
           <Button variant="ghost" onClick={() => api.deleteTask(listId, task.id)} aria-label={`Delete task "${task.title}"`}>
             <Trash className="h-4 w-4" />
           </Button>
