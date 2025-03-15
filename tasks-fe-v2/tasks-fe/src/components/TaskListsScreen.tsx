@@ -1,18 +1,42 @@
 import { Button, Card, CardBody, Progress } from "@nextui-org/react";
 import { List, Plus } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../AppProvider";
+import { TaskStatus } from "../domain/TaskStatus";
 
 const TaskListScreen: React.FC = () => {
   const { state, api } = useAppContext();
 
   // Fetch task lists when the component mounts
   useEffect(() => {
-    if (null == state.taskLists) {
-      api.fetchTaskLists();
+    const fetchData = async () => {
+      if (null == state.taskLists) {
+        await api.fetchTaskLists();
+      }
+      // Fetch tasks for each task list
+      if (state.taskLists) {
+        for (const list of state.taskLists) {
+          if (list.id && !state.tasks[list.id]) {
+            await api.fetchTasks(list.id);
+          }
+        }
+      }
+    };
+    fetchData();
+  }, [state.taskLists?.length]);
+
+  // Calculate progress for each task list
+  const getTaskListProgress = (taskListId: string | undefined) => {
+    if (!taskListId || !state.tasks[taskListId]) {
+      return 0;
     }
-  }, [state]);
+    const tasks = state.tasks[taskListId];
+    const closedTasks = tasks.filter(
+      (task) => task.status === TaskStatus.CLOSED
+    ).length;
+    return tasks.length > 0 ? closedTasks / tasks.length : 0;
+  };
 
   // Get a handle on the router
   const navigate = useNavigate();
@@ -40,6 +64,8 @@ const TaskListScreen: React.FC = () => {
       </Button>
       {/* console.log("Task Lists:", state.taskLists);             //Added this line to check the log */}
       {state.taskLists.map((list) => {
+        const progress = getTaskListProgress(list.id);
+        const taskCount = list.id && state.tasks[list.id] ? state.tasks[list.id].length : 0;
         return (
           <Card
             key={list.id}
@@ -58,12 +84,12 @@ const TaskListScreen: React.FC = () => {
                 />
                 <h2 className="text-lg font-semibold">{list.title}</h2>{" "}
               </div>
-              <p className="text-sm text-gray-500 mt-2">{list.count} tasks</p>
+              <p className="text-sm text-gray-500 mt-2">{taskCount} tasks</p>
               <Progress
-                value={list.progress ? list.progress * 100 : 0}
+                value={progress * 100}
                 className="mt-2"
                 color="primary"
-                aria-label={`Progress for ${list.title}: ${list.progress}%`}
+                aria-label={`Progress for ${list.title}: ${Math.round(progress * 100)}%`}
               />
             </CardBody>
           </Card>
